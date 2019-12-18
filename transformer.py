@@ -1,3 +1,8 @@
+import pandas as pd
+import os
+import codecs
+import datetime
+
 # 5x5 grid letters, missing I
 alphabet = 'ABCDEFGHJKLMNOPQRSTUVWXYZ'
 
@@ -39,13 +44,46 @@ def irish2xy(grid_ref):
     gridsizes = [100000]
     return grid2xy(false_easting, false_northing, gridsizes, grid_ref)
 
-grid_ref = 'NO19001640' #ABNTY
-easting, northing = british2xy(grid_ref)
-print(easting, northing)
+#grid_ref = 'NO19001640' #ABNTY
+#easting, northing = british2xy(grid_ref)
+#print(easting, northing)
 
-grid_ref = 'W70308320' #BABOR
-easting, northing = irish2xy(grid_ref)
-print(easting, northing)
+#grid_ref = 'Q5975900960' #BABOR
+#easting, northing = irish2xy(grid_ref)
+#print(easting, northing)
+
+# set paths
+dir_path = os.path.dirname(os.path.realpath(__file__))
+file_in = dir_path + "\\" + "data.csv"
+file_out = dir_path + "\\" + "data2.csv"
+
+# read csv file
+data = pd.read_csv(
+    file_in, # relative python path to subdirectory
+    encoding='utf-8',
+    sep='\t', # deliminiter
+    quotechar="'",  # single quote allowed as quote character
+    usecols=['site','grid','country'], # only load the  columns specified
+    skiprows=0, # skip X rows of the file
+    na_values=['.', '??'] # take any '.' or '??' values as NA
+)
+
+# create triples from dataframe
+lines = []
+for index, row in data.iterrows():
+    if row['country'] == 'IR':
+        easting, northing = irish2xy(str(row['grid']))
+        lines.append(row['site'] + "|" + str(int(easting)) + "|" + str(int(northing)))
+    elif row['country'] == 'GB' :
+        easting, northing = british2xy(str(row['grid']))
+        lines.append(row['site'] + "|" + str(int(easting)) + "|" + str(int(northing)))
+
+# write output file
+file = codecs.open(file_out, "w", "utf-8")
+for line in lines:
+    file.write(line)
+    file.write("\r\n")
+file.close()
 
 # PROJ.4 projection definitions
 #import pyproj
