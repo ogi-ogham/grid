@@ -73,10 +73,11 @@ lines = []
 for index, row in data.iterrows():
     if row['country'] == 'IR':
         easting, northing = irish2xy(str(row['grid']))
-        lines.append(row['site'] + "|" + str(int(easting)) + "|" + str(int(northing)))
+        lines.append(row['site'] + "|" + str(int(easting)) + "|" + str(int(northing)) + "|" + "29903")
     elif row['country'] == 'GB' :
-        easting, northing = british2xy(str(row['grid']))
-        lines.append(row['site'] + "|" + str(int(easting)) + "|" + str(int(northing)))
+        #easting, northing = british2xy(str(row['grid']))
+        #lines.append(row['site'] + "|" + str(int(easting)) + "|" + str(int(northing)) + "|" + "27700")
+        print("")
 
 # write output file
 file = codecs.open(file_out, "w", "utf-8")
